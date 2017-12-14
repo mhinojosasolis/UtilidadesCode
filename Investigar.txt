@@ -1,0 +1,7 @@
+
+- APIs: ApiConnect, Apigee 
+- MicroServicios: Spring Boot, deseables Node.js.
+- DevOps: Netbeans, GoCD, Selenium, Grails, 
+- SOA: OSB, Message Broker oFuse e implementación de servicios SOAP, XML, XSD, Xpath, XQuery, transformaciones XSL.
+- Contenedores Docker, orquestación, deseable Kubernetes, Netflix OSS.
+- Cloud, Bluemix

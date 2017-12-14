@@ -1,0 +1,8 @@
+/t:Package /p:PackageLocation=Evaluaciones.zip'
+
+
+
+D:\SITIOS\HCMEvaluaciones
+
+
+ <publishUrl>C:\deploy\HCM v1.8.4</publishUrl>
