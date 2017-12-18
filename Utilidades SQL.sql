@@ -1,4 +1,7 @@
+------------------------------Busca una Tabla dentro de la BBDD------------------------------------------------------
 
+SELECT * FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_NAME LIKE '%log%'
 
 ------------------------------Busca un Objeto dentro de la BBDD------------------------------------------------------
 SELECT
