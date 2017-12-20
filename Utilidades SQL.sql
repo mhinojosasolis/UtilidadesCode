@@ -32,3 +32,20 @@ WITH STAT_HEADER
 SELECT NAME,indid,rowmodctr
 FROM sys.sysindexes s
 WHERE s.id= OBJECT_ID('tbl_revision');
+
+
+------------------------ CURSOR X ------------------------------------------------------------------------------------------------
+DECLARE curso CURSOR FOR
+	SELECT id FROM tabla
+OPEN curso
+FETCH NEXT FROM curso INTO @id
+WHILE @@FETCH_STATUS = 0
+	BEGIN
+				
+		FETCH NEXT FROM curso INTO @id
+	END 
+CLOSE curso
+DEALLOCATE curso
+
+----------------------------Reiniciar id primario de una tabla---------------------------------------------------
+DBCC CHECKIDENT (<nombre_tabla>, RESEED,0)
