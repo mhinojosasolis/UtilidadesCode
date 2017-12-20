@@ -10,6 +10,10 @@ EXEC sp_addlinkedsrvlogin 'DLLMSAPP',
 
 select * from dllmsapp.dllms.dbo.clientm
 
+
+-------------------------- SHA-1 ----------------------------------------------------------------------------------
+UPPER(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('SHA1', replace('TEXTOENCRIPT',' ',''))), 3, 40))
+
 ------------------------------Busca una Tabla dentro de la BBDD------------------------------------------------------
 
 SELECT * FROM INFORMATION_SCHEMA.TABLES 
