@@ -1,3 +1,15 @@
+-- ADD LINK SERVER -----------------------------------------------------------------------------------------
+EXEC sp_addlinkedserver
+@server='DLLMSAPP',
+@srvproduct='',
+@provider='SQLNCLI',
+@datasrc='192.168.0.144'
+
+EXEC sp_addlinkedsrvlogin 'DLLMSAPP',
+'false', NULL, 'DB_Reports', 'DL1report5'
+
+select * from dllmsapp.dllms.dbo.clientm
+
 ------------------------------Busca una Tabla dentro de la BBDD------------------------------------------------------
 
 SELECT * FROM INFORMATION_SCHEMA.TABLES 
