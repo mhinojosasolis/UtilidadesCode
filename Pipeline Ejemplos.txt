@@ -1,0 +1,71 @@
+----DEV SGD CVERDE EJEMPLO
+
+pipeline {
+    agent any
+    stages {
+        stage('Limpiando Workspace') {
+            steps {
+              cleanWs()
+            }
+        }
+        stage('Obteniendo Fuentes') {
+            steps {
+              git branch: 'dev', credentialsId: '56d5fd04-205b-40f4-a270-45b2ea28f916', url: 'https://github.com/sw-hcm-dl/SGDCruzverde.git'
+            }
+        }
+        stage('Desplegando Sitio en Dev') {
+            steps {
+                bat 'xcopy "D:\\workspace\\Dev_Pip_SGDCruzverde" "D:\\SITIOS\\cruzverde" /c /q /e /h /y /i /r /u /k'
+            }
+        }
+       
+    }
+}
+
+
+----QA SGD CVERDE EJEMPLO
+
+
+pipeline {
+    agent any
+    stages {
+        stage('Limpiando Workspace') {
+            steps {
+              cleanWs()
+            }
+        }
+        stage('Obteniendo Fuentes') {
+            steps {
+              git branch: 'qa', credentialsId: '56d5fd04-205b-40f4-a270-45b2ea28f916', url: 'https://github.com/sw-hcm-dl/SGDCruzverde.git'
+            }
+        }
+        stage('Desplegando Sitio en QA') {
+            steps {
+                bat 'xcopy "D:\\workspace\\Qa_Pip_SGDCruzverde" "\\\\192.168.0.141\\WorkspaceJenkins\\SGDCruzverde" /c /q /e /h /y /i /r /u /k'
+            }
+        }
+       
+    }
+}
+
+
+
+-----------------------------ACADEMIA CORE PRUEBA ----------------------
+
+node {
+    try {
+        stage('Obtener Fuentes') {
+            cleanWs()
+            git branch: 'dev', credentialsId: '56d5fd04-205b-40f4-a270-45b2ea28f916', url: 'https://github.com/sw-hcm-dl/hcm.git'
+        }
+        stage('Restaurar Paquetes') {
+            bat 'C:/Tools/Nuget/nuget.exe restore DL.sln'
+        }
+        stage('Construir Proyecto') {
+            bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe" DL.sln /p:PublishProfile=dev.pubxml /p:DeployTarget=Package /p:PackageLocation=DL.zip /p:CreatePackageOnPublish=True'
+        }
+    } catch (any) {
+        emailext body: 'El proyecto no pudo completar todas las etapas de jenkins en forma satisfactoria.', subject: 'Fallo en Jenkins!!! Ejemplo Pruebas Unitarias', to: 'gsierro@dl.cl'
+        throw any
+    }
+}
