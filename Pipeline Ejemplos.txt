@@ -69,3 +69,173 @@ node {
         throw any
     }
 }
+
+
+----------------------------------Definitivo sistema WEB-------------------------------------------
+
+pipeline {
+    agent any
+    stages {
+        stage('Limpiar Workspace') {
+            steps {
+               cleanWs()
+            }
+        }
+        stage('Obtener Fuentes Git') {
+            steps {
+                git branch: 'dev', credentialsId: '56d5fd04-205b-40f4-a270-45b2ea28f916', url: 'https://github.com/sw-hcm-dl/Colaborador2.0.git'
+                
+            }
+        }
+        stage('Restaurar paquetes Nuget') {
+            steps {
+                bat 'C:\\Nuget\\nuget.exe restore D:\\workspace\\Dev_Pip_Colaborador2.0\\Colaborador20.sln'
+            }
+        }
+        stage('Limpiar Solución') {
+            steps {
+                bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe" Colaborador20.sln /t:clean'
+            }
+                
+        }
+        stage('Compilar y Desplegar Proyecto') {
+            steps {
+                bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe" Colaborador20.sln /p:DeployOnBuild=True /p:PublishProfile=FolderProfile.pubxml'
+            }
+        }
+        stage('Elimando Workspace') {
+            steps {
+               deleteDir()
+            }
+        }
+        stage('Eliminando Archivos de Configuración') {
+            steps {
+                //fileOperations([fileDeleteOperation(includes: '**/*.config', excludes: '')])
+                bat 'if exist "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\temp" RMDIR /Q /S "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\temp"'
+                bat 'if exist "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\logs" RMDIR /Q /S "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\logs"'
+                bat 'if exist "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\*.config" DEL /Q "D:\\deploy\\Sistemas WEB\\Colaborador2.0\\*.config"'
+            }
+        }
+        stage('Desplegando Sitio en Dev') {
+            steps {
+                bat 'xcopy "D:\\deploy\\Sistemas WEB\\Colaborador2.0" "D:\\SITIOS\\colaborador20Jenkins" /c /q /e /h /y /i /r /k'
+            }
+        }
+    }
+}
+
+
+----------------------------------Definitivo Aplicativos-------------------------------------------
+
+pipeline {
+    agent any
+    stages {
+        stage('Limpiar Workspace') {
+            steps {
+              cleanWs()
+              //echo 'Hola mundo'
+            }
+        }
+        stage('Obtener Fuentes Git') {
+            steps {
+                git branch: 'dev', credentialsId: '9a53e14c-a04f-4f6f-aca0-8e5d9d897544', url: 'https://github.com/sw-hcm-dl/DLCuadraturaActividadScorm.git'
+                //echo 'Hola mundo'
+            }
+        }
+        stage('Restaurar paquetes Nuget') {
+            steps {
+                bat 'C:\\nuget\\nuget.exe restore D:\\workspace\\Dev_Pip_DLCuadraturaActividadScorm\\DLCuadraturaActividadScorm.sln'
+                //echo 'Hola mundo'
+            }
+        }
+        stage('Limpiar Solucion') {
+            steps {
+                bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe" DLCuadraturaActividadScorm.sln /t:clean'
+                //echo 'Hola mundo'
+            }
+                
+        }
+        stage('Compilar y Desplegar Proyecto') {
+            steps {
+                bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\Devenv" "D:\\workspace\\Dev_Pip_DLCuadraturaActividadScorm\\DLCuadraturaActividadScorm.sln" /build "Debug|Any CPU" /out'
+                //echo 'Hola mundo'
+            }
+        }
+        stage('Copiando Entregables') {
+            steps {
+                bat 'xcopy "D:\\workspace\\Dev_Pip_DLCuadraturaActividadScorm\\SetupDLCuadraturaActividadScorm" "D:\\deploy\\Aplicativos\\DLCuadraturaActividadScorm" /c /q /e /h /y /i /r /k'
+            }
+        }
+        stage('Elimando Workspace') {
+            steps {
+              deleteDir()
+
+            }
+        }
+        stage('Eliminando Archivos de Configuración') {
+            steps {
+                //fileOperations([fileDeleteOperation(includes: '**/*.config', excludes: '')])
+                //bat 'if exist "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\temp" RMDIR /Q /S "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\temp"'
+                //bat 'if exist "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\logs" RMDIR /Q /S "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\logs"'
+                bat 'if exist "D:\\deploy\\Aplicativos\\DLCuadraturaActividadScorm\\*.vdproj" DEL /Q "D:\\deploy\\Aplicativos\\DLCuadraturaActividadScorm\\*.vdproj"'
+            }
+        }
+    }
+}
+
+----------------------------------Definitivo Sistemas Android-------------------------------------------
+
+pipeline {
+    agent any
+    stages {
+        stage('Limpiar Workspace') {
+            steps {
+              cleanWs()
+              //echo 'Hola mundo'
+            }
+        }
+        stage('Obtener Fuentes Git') {
+            steps {
+                git branch: 'rgajardo', credentialsId: '9a53e14c-a04f-4f6f-aca0-8e5d9d897544', url: 'https://github.com/sw-hcm-dl/asistencia.git'
+                //echo 'Hola mundo'
+            }
+        }
+        stage('Limpiar Aplicación') {
+            steps {
+                bat 'echo sdk.dir=D\\:\\\\ToolsJenkins\\\\SDK>local.properties'
+                bat 'gradlew.bat clean'
+                //echo 'Hola mundo'
+            }
+        }
+        stage('Compilar Apk') {
+            steps {
+                bat 'gradlew.bat build'
+                //echo 'Hola mundo'
+            }
+                
+        }
+        stage('Desplegando Apk ') {
+            steps {
+                bat 'if exist "D:\\workspace\\Dev_Pip_Asistencia\\app\\build" xcopy "D:\\workspace\\Dev_Pip_Asistencia\\app\\build" "D:\\deploy\\Sistemas Android\\Asistencia" /c /q /e /h /y /i /r /k'
+              
+            }
+        }
+        stage('Elimando Workspace') {
+            steps {
+              deleteDir()
+                
+            }
+        }
+        //stage('Eliminando Archivos de Configuración') {
+        //    steps {
+        //        //fileOperations([fileDeleteOperation(includes: '**/*.config', excludes: '')])
+        //        //bat 'if exist "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\temp" RMDIR /Q /S "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\temp"'
+        //        //bat 'if exist "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\logs" RMDIR /Q /S "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\logs"'
+        //        //bat 'if exist "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\*.vdproj" DEL /Q "D:\\deploy\\Aplicativos\\DLNotificacionesEstado\\*.vdproj"'
+        //        echo 'Hola mundo'
+        //    }
+        //}
+        
+    }
+}
+----------------------------------Definitivo Aplicativos-------------------------------------------
